@@ -599,8 +599,23 @@
             document.getElementById('overdueAmount').textContent = formatCurrency(overdue);
         }
 
+        // Auto-update overdue payments
+        function updateOverdue() {
+            const today = new Date().toISOString().split('T')[0];
+            let changed = false;
+            payments.forEach(p => {
+                if (p.status === 'pending' && p.dueDate && p.dueDate < today) {
+                    p.status = 'overdue';
+                    changed = true;
+                }
+            });
+            if (changed) saveData();
+        }
+
         // Render payments table
         function renderPayments() {
+            updateOverdue();
+
             const statusFilter = document.getElementById('filterStatus').value;
             const categoryFilter = document.getElementById('filterCategory').value;
             const search = document.getElementById('searchInput').value.toLowerCase();
